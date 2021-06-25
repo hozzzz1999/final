@@ -1,0 +1,116 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
+
+#define MAXline 1024
+char word[128], line[MAXline],output[MAXline][MAXline],voutput[MAXline][MAXline];
+
+int main(int argc,char *argv[])
+{
+ int i,numofline[128],vnumofline[128];
+ int cnt=0, vcnt=0, iON=0, nON=0, vON=0, cON=0, linenum=0;
+ FILE *fp;
+  fp = fopen(argv[argc-1] , "r");
+ 
+ if(fp == NULL)
+ { 
+  fprintf(stderr, "file open error: %s\n", argv[argc-1]); 
+  exit(1); 
+ } 
+ 
+ strcpy(word, argv[argc-2]);
+ for(i=1 ; i<argc-2 ; i++)
+ {  
+  if(argv[i][1] == 'i') iON = 1;
+    if(argv[i][1] == 'n') nON = 1;
+    if(argv[i][1] == 'v') vON = 1;
+    if(argv[i][1] == 'c') cON = 1;
+ }
+ 
+ while(fgets(line, 1024 , fp))
+ {
+  int tmp=0;
+  
+  while(line[tmp] != '\n' && line[tmp] != 0) tmp++;
+  line[tmp] = '\0';
+  
+  linenum++;
+     if(iON)
+  {
+        if(strcasestr(line,word) != 0)
+   {
+    strcpy(output[cnt],line);
+        numofline[cnt] = linenum;
+        cnt++;
+        continue;
+      }
+    }
+    else
+  {
+      if(strstr(line,word) != 0)
+   {
+        strcpy(output[cnt],line);
+        numofline[cnt] = linenum;
+        cnt++;
+        continue;
+      }
+   }
+
+     strcpy(voutput[vcnt],line);
+     vnumofline[vcnt] = linenum;
+     vcnt++;
+ }
+ 
+ int j=0;
+ if(vON)
+ {
+    printf("*Not Matched*\n");
+    if(vcnt == 0) printf("notfound\n");
+    while(j < vcnt)
+  {
+      if(nON)
+   {
+        printf("%d:%s\n",vnumofline[j],voutput[j]);
+        j++;
+      }
+      else
+   {
+        printf("%s\n",voutput[j]);
+        j++;
+      }
+    }
+  }
+  else
+ {
+    printf("*Matched*\n");
+    if(cnt == 0) printf("notfound\n");
+    for(j=0 ; j<cnt ; j++)
+  {
+      if(nON)
+   {
+        printf("%d:%s\n",numofline[j],output[j]);
+      }
+      else
+   {
+        printf("%s\n",output[j]);
+      }
+    }
+  }
+
+ if(cON)
+ {
+    printf("*Occurrence*\n");
+    if(vON)
+  {
+     printf("%d\n",vcnt);
+    }
+    else
+  {
+     printf("%d\n",cnt);
+    }
+  } 
+
+  fclose(fp);
+  return 0;
+}
